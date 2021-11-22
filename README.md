@@ -40,12 +40,13 @@ tools.
 
 You can then use `my_function` inside GML.
 
-If all went well, the following code should print: `my_function:
+If all went well, the following code should print `my_function:
 420.69`:
 
 ```gml
 rs_init()
-show_debug_message("my_function: " + string(my_function()))
+var result = rs_call("my_function")
+show_debug_message("my_function: " + string(result))
 ```
 
 ## Rust Build Tools
