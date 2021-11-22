@@ -1,0 +1,2 @@
+[build]
+target-dir = "rs_target"
