@@ -2,34 +2,39 @@
 
 A Rust integration for GameMaker.
 
+## Package Structure
+
+The [rust](rust) directory contains all the Rust glue that holds this
+package together. It is comprised of the following subtrees:
+
+- [modules](rust/modules), the directory where all your PNRust modules
+  are stored.
+- [pn_rust](rust/pn_rust), a crate shared by all PNRust modules.
+- [pn_rust_dll](rust/pn_rust_dll), a DLL that powers PNRust.
+
 ## Getting Started
 
 First of all, you need to copy [rs_build.bat](rs_build.bat),
-[rs_src](rs_src), [.cargo](cargo), [Cargo.toml](Cargo.toml), the
-`PNRust` extension, and the `pn_rust` script to your game folder. Use
-"Add existing" for the latter two.
+[rust](rust), the `PNRust` extension, and the `pn_rust` script to
+your game folder. Use "Add existing" for the latter two.
 
 Before you can use PNRust, you need to call `rs_init` somewhere in
 your game's code.
 
-After that, modify [exports.rs](rs_src/exports.rs) (which see) to
-export global functions to GML.
+After that, create a new module in [rust/modules](rust/modules). Check
+out the [example module](rust/modules/example) for more info.
 
-A complete example would look like this:
+Right now, to add a module to your DLL, you'll need to append the
+following lines of configuration to
+[rust/pn_rust_dll/Cargo.toml](rust/pn_rust_dll/Cargo.toml):
 
-```rust
-use crate::buffer::Buffer;
-use crate::value::Value;
-use crate::Context;
-
-pub fn init_exports(context: &mut Context) {
-    context.export("my_function", my_function);
-}
-
-pub fn my_function(context: &mut Context, args: &mut Buffer) -> Value {
-    Value::Real(420.69)
-}
+```toml
+[dependencies.my_great_module]
+path = "../modules/my_great_module"
 ```
+
+You will also need to make non-trivial changes to the [glue
+file](rust/pn_rust_dll/src/glue.rs). This will not be needed soon.
 
 Once you make any changes to the Rust code, run
 [rs_build.bat](rs_build.bat). You should run it inside an open command
@@ -38,14 +43,14 @@ prompt to see any build errors.
 See the next section to learn how to install the necessary Rust build
 tools.
 
-You can then use `my_function` inside GML.
-
-If all went well, the following code should print `my_function:
-420.69`:
+GML example:
 
 ```gml
 rs_init()
-var result = rs_call("my_function")
+
+// Assuming you've exported `my_function` from `my_great_module`.
+var result = rs_call("my_function", [69])
+
 show_debug_message("my_function: " + string(result))
 ```
 

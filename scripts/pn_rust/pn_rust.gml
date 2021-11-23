@@ -1,4 +1,4 @@
-#macro RS_BUFFER_SIZE 65535
+#macro RS_BUFFER_SIZE 65536
 
 enum RustTypes {
 	UNDEFINED,
@@ -7,16 +7,9 @@ enum RustTypes {
 	ARRAY,
 }
 
-rs_exported_functions = ds_map_create()
-
-function rs_export_function(name, fn) {
+function rs_export(name, fn) {
 	rs_exported_functions[? name] = fn
 }
-
-// TODO: screw around with byte operations to make use of buffer_fast.
-rs_args_buffer = buffer_create(RS_BUFFER_SIZE, buffer_fixed, 1)
-rs_executor_buffer = buffer_create(RS_BUFFER_SIZE, buffer_fixed, 1)
-rs_signal_buffer = buffer_create(1, buffer_fixed, 1)
 
 function rs_call(name, args) {
 	buffer_seek(rs_args_buffer, buffer_seek_start, 0)
@@ -136,11 +129,14 @@ function rs_decode_value(buffer) {
 }
 
 function rs_init() {
+	rs_exported_functions = ds_map_create()
+
+	rs_args_buffer = buffer_create(RS_BUFFER_SIZE, buffer_fixed, 1)
+	rs_executor_buffer = buffer_create(RS_BUFFER_SIZE, buffer_fixed, 1)
+	rs_signal_buffer = buffer_create(1, buffer_fixed, 1)
+
 	rs_internal_init_exports()
 
-	rs_internal_init_gml_executor(buffer_get_address(rs_executor_buffer),
-	                              buffer_get_address(rs_signal_buffer))
-
-	rs_internal_init_rust_executor(buffer_get_address(rs_executor_buffer),
-	                               buffer_get_address(rs_signal_buffer))
+	rs_internal_init_executors(buffer_get_address(rs_executor_buffer),
+	                           buffer_get_address(rs_signal_buffer))
 }

@@ -18,14 +18,10 @@
   "files": [
     {"filename":"pn_rust.dll","origname":"","init":"","final":"","kind":1,"uncompress":false,"functions":[
         {"externalName":"init_exports","kind":1,"help":"","hidden":false,"returnType":2,"argCount":0,"args":[],"resourceVersion":"1.0","name":"rs_internal_init_exports","tags":[],"resourceType":"GMExtensionFunction",},
-        {"externalName":"init_gml_executor","kind":1,"help":"","hidden":false,"returnType":2,"argCount":0,"args":[
+        {"externalName":"init_executors","kind":1,"help":"","hidden":false,"returnType":2,"argCount":0,"args":[
             1,
             1,
-          ],"resourceVersion":"1.0","name":"rs_internal_init_gml_executor","tags":[],"resourceType":"GMExtensionFunction",},
-        {"externalName":"init_rust_executor","kind":1,"help":"","hidden":false,"returnType":2,"argCount":0,"args":[
-            1,
-            1,
-          ],"resourceVersion":"1.0","name":"rs_internal_init_rust_executor","tags":[],"resourceType":"GMExtensionFunction",},
+          ],"resourceVersion":"1.0","name":"rs_internal_init_executors","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"call_function","kind":1,"help":"","hidden":false,"returnType":2,"argCount":0,"args":[
             1,
             1,
@@ -35,8 +31,7 @@
           ],"resourceVersion":"1.0","name":"rs_internal_receive_result","tags":[],"resourceType":"GMExtensionFunction",},
       ],"constants":[],"ProxyFiles":[],"copyToTargets":-1,"order":[
         {"name":"rs_internal_init_exports","path":"extensions/PNRust/PNRust.yy",},
-        {"name":"rs_internal_init_gml_executor","path":"extensions/PNRust/PNRust.yy",},
-        {"name":"rs_internal_init_rust_executor","path":"extensions/PNRust/PNRust.yy",},
+        {"name":"rs_internal_init_executors","path":"extensions/PNRust/PNRust.yy",},
         {"name":"rs_internal_call_function","path":"extensions/PNRust/PNRust.yy",},
         {"name":"rs_internal_receive_result","path":"extensions/PNRust/PNRust.yy",},
       ],"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMExtensionFile",},
@@ -60,7 +55,7 @@
   "androidactivityinject": "",
   "gradleinject": "",
   "androidcodeinjection": "",
-  "hasConvertedCodeInjection": false,
+  "hasConvertedCodeInjection": true,
   "ioscodeinjection": "",
   "tvoscodeinjection": "",
   "iosSystemFrameworkEntries": [],

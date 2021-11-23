@@ -2,12 +2,13 @@ use crate::value::Value;
 
 use libc::c_char;
 
-const BUFFER_SIZE: usize = 65535;
+const BUFFER_SIZE: usize = 65536;
 
 #[derive(Clone)]
 pub struct Buffer {
     contents: [u8; BUFFER_SIZE],
     position: usize,
+    length: usize,
 }
 
 impl Buffer {
@@ -15,6 +16,7 @@ impl Buffer {
         Self {
             contents: [0; BUFFER_SIZE],
             position: 0,
+            length: 0,
         }
     }
 
@@ -116,6 +118,7 @@ impl Buffer {
 
         self.contents[self.position] = *value;
         self.position += 1;
+        self.length += 1;
     }
 
     fn write_string(&mut self, string: &String) {
@@ -147,7 +150,7 @@ impl Buffer {
     }
 
     pub unsafe fn copy_into(&self, destination: &*mut c_char) {
-        for i in 0..BUFFER_SIZE {
+        for i in 0..self.length {
             *destination.add(i) = self.contents[i] as c_char;
         }
     }

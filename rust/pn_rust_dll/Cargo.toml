@@ -1,0 +1,17 @@
+[package]
+name = "pn_rust_dll"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+libc = "0.2"
+lazy_static = "1.4"
+
+[dependencies.pn_rust]
+path = "../pn_rust"
+
+[dependencies.example]
+path = "../modules/example"

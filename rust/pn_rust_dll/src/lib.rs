@@ -29,123 +29,72 @@
 //!
 //! There is only one step to this thread's workings: it sends a message back to the main thread, which contains the GML function's name and arguments.
 
+mod glue;
+
 use lazy_static::lazy_static;
 
-mod buffer;
-mod exports;
-mod value;
-
-use crate::buffer::Buffer;
-use crate::value::Value;
 use libc::c_char;
 use libc::c_double;
-use std::collections::HashMap;
+
+use pn_rust::{Buffer, Context, Value};
+
 use std::ffi::CStr;
 use std::sync::atomic::AtomicPtr;
 use std::sync::mpsc;
 use std::sync::Mutex;
 
-/// A global function that can be exported to GML.
-///
-/// The function's arguments are stored in a buffer. It may read as many as it wants or can.
-///
-/// [Context::call_gml] allows to seamlessly call GML functions from Rust.
-pub type ExportedFunction = fn(&mut Context, &mut Buffer) -> Value;
-
-type GMLCall = (String, Vec<Value>);
-type RustCall = (String, Buffer);
-
-pub struct Context {
-    exports: HashMap<String, Box<ExportedFunction>>,
-    gml_channel: Option<Mutex<mpsc::Sender<GMLCall>>>,
-    rust_channel: Option<Mutex<mpsc::Sender<RustCall>>>,
-}
-
-impl Context {
-    pub fn call_gml(&mut self, function_name: &str, arguments: Vec<Value>) -> Value {
-        *GML_RESULT.lock().unwrap() = None;
-
-        self.gml_channel
-            .as_ref()
-            .unwrap()
-            .lock()
-            .unwrap()
-            .send((function_name.to_string(), arguments))
-            .unwrap();
-
-        loop {
-            let result = GML_RESULT.lock().unwrap();
-
-            if result.is_some() {
-                return result.clone().unwrap();
-            }
-        }
-    }
-
-    pub fn export(&mut self, name: &str, function: ExportedFunction) {
-        self.exports.insert(name.to_string(), Box::new(function));
-    }
-}
-
 lazy_static! {
-    static ref GML_RESULT: Mutex<Option<Value>> = Mutex::new(None);
+    static ref SIGNAL_BUFFER: Mutex<AtomicPtr<c_char>> = Default::default();
+    static ref EXECUTOR_BUFFER: Mutex<AtomicPtr<c_char>> = Default::default();
     static ref CONTEXT: Mutex<Context> = Mutex::new(Context {
-        exports: HashMap::new(),
         gml_channel: None,
         rust_channel: None,
     });
 }
 
 #[no_mangle]
-pub unsafe extern "cdecl" fn init_gml_executor(ptr: *mut c_char, signal: *mut c_char) -> c_double {
-    let mut ptr = AtomicPtr::new(ptr);
-    let mut signal = AtomicPtr::new(signal);
+pub unsafe extern "cdecl" fn init_executors(ptr: *mut c_char, signal: *mut c_char) -> c_double {
+    *EXECUTOR_BUFFER.lock().unwrap() = AtomicPtr::new(ptr);
+    *SIGNAL_BUFFER.lock().unwrap() = AtomicPtr::new(signal);
 
     let (sender, receiver) = mpsc::channel();
 
     CONTEXT.lock().unwrap().gml_channel = Some(Mutex::new(sender));
 
+    // The GML thread.
     std::thread::spawn(move || loop {
         let (function_name, arguments) = receiver.recv().unwrap();
 
         let mut buffer = Buffer::new();
         buffer.write(&Value::String(function_name));
         buffer.write(&Value::Array(arguments));
-        buffer.copy_into(&ptr.get_mut());
+        buffer.copy_into(EXECUTOR_BUFFER.lock().unwrap().get_mut());
 
         let mut buffer = Buffer::new();
         buffer.write_byte(&1);
-        buffer.copy_into(&signal.get_mut());
+        buffer.copy_into(SIGNAL_BUFFER.lock().unwrap().get_mut());
     });
-
-    1.0
-}
-
-#[no_mangle]
-pub unsafe extern "cdecl" fn init_rust_executor(ptr: *mut c_char, signal: *mut c_char) -> c_double {
-    let mut ptr = AtomicPtr::new(ptr);
-    let mut signal = AtomicPtr::new(signal);
 
     let (sender, receiver) = mpsc::channel();
 
     CONTEXT.lock().unwrap().rust_channel = Some(Mutex::new(sender));
 
+    // The Rust thread.
     std::thread::spawn(move || loop {
         let (function_name, mut arguments) = receiver.recv().unwrap();
 
         let result = {
             let mut context = CONTEXT.lock().unwrap();
-            let wrapper = &context.exports[&function_name].clone();
-            wrapper(&mut context, &mut arguments)
+            glue::call_function(&mut context, function_name, &mut arguments)
         };
 
         let mut buffer = Buffer::new();
         buffer.write(&result);
-        buffer.copy_into(&ptr.get_mut());
+        buffer.copy_into(EXECUTOR_BUFFER.lock().unwrap().get_mut());
 
         let mut buffer = Buffer::new();
         buffer.write_byte(&2);
-        buffer.copy_into(&signal.get_mut());
+        buffer.copy_into(SIGNAL_BUFFER.lock().unwrap().get_mut());
     });
 
     1.0
@@ -177,13 +126,13 @@ pub unsafe extern "cdecl" fn call_function(
 #[no_mangle]
 pub unsafe extern "cdecl" fn receive_result(ptr: *const c_char) -> c_double {
     let mut buffer = Buffer::from_ptr(ptr);
-    *GML_RESULT.lock().unwrap() = Some(buffer.read());
+    *pn_rust::GML_RESULT.lock().unwrap() = Some(buffer.read());
     1.0
 }
 
 #[no_mangle]
 pub extern "cdecl" fn init_exports() -> c_double {
-    exports::init_exports(&mut CONTEXT.lock().unwrap());
+    glue::init(&mut CONTEXT.lock().unwrap());
 
     1.0
 }

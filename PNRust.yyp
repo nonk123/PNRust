@@ -1,6 +1,8 @@
 {
   "resources": [
+    {"id":{"name":"roomDemo","path":"rooms/roomDemo/roomDemo.yy",},"order":0,},
     {"id":{"name":"PNRust","path":"extensions/PNRust/PNRust.yy",},"order":0,},
+    {"id":{"name":"objDemo","path":"objects/objDemo/objDemo.yy",},"order":0,},
     {"id":{"name":"pn_rust","path":"scripts/pn_rust/pn_rust.yy",},"order":0,},
   ],
   "Options": [
@@ -15,7 +17,9 @@
     "name": "Default",
     "children": [],
   },
-  "RoomOrderNodes": [],
+  "RoomOrderNodes": [
+    {"roomId":{"name":"roomDemo","path":"rooms/roomDemo/roomDemo.yy",},},
+  ],
   "Folders": [
     {"folderPath":"folders/Sprites.yy","order":1,"resourceVersion":"1.0","name":"Sprites","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Tile Sets.yy","order":2,"resourceVersion":"1.0","name":"Tile Sets","tags":[],"resourceType":"GMFolder",},
