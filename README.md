@@ -33,6 +33,9 @@ prompt to see any build errors.
 See the next section to learn how to install the necessary Rust build
 tools.
 
+Warning: you need to have Git in your PATH for
+[rs_build.bat](rs_build.bat) to work!
+
 GML example:
 
 ```gml
