@@ -4,13 +4,15 @@ A Rust integration for GameMaker.
 
 ## Package Structure
 
-The [rust](rust) directory contains all the Rust glue that holds this
-package together. It is comprised of the following subtrees:
+The [rust](rust) directory contains all the Rust code that makes
+PNRust possible. It is comprised of the following subtrees:
 
 - [modules](rust/modules), the directory where all your PNRust modules
   are stored.
 - [pn_rust](rust/pn_rust), a crate shared by all PNRust modules.
 - [pn_rust_dll](rust/pn_rust_dll), a DLL that powers PNRust.
+- [generate-dll](rust/generate-dll), a binary that generates the glue
+  that holds the module system together.
 
 ## Getting Started
 
@@ -23,18 +25,6 @@ your game's code.
 
 After that, create a new module in [rust/modules](rust/modules). Check
 out the [example module](rust/modules/example) for more info.
-
-Right now, to add a module to your DLL, you'll need to append the
-following lines of configuration to
-[rust/pn_rust_dll/Cargo.toml](rust/pn_rust_dll/Cargo.toml):
-
-```toml
-[dependencies.my_great_module]
-path = "../modules/my_great_module"
-```
-
-You will also need to make non-trivial changes to the [glue
-file](rust/pn_rust_dll/src/glue.rs). This will not be needed soon.
 
 Once you make any changes to the Rust code, run
 [rs_build.bat](rs_build.bat). You should run it inside an open command

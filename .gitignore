@@ -1,8 +1,9 @@
-extensions/PNRust/pn_rust.dll
+/extensions/PNRust/pn_rust.dll
 
-rust/*/target/
-rust/modules/*/target
-!rust/modules/target
+/target
+
+/rust/*/target/
+/rust/modules/*/target
 
 # Emacs junk.
 \#*\#

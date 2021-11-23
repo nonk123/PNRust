@@ -1,5 +1,8 @@
+// A module has the same name as its root directory.
+
 use pn_rust::{exports, Buffer, Context, Module, Value};
 
+// The entry point of any module is a struct named after it.
 pub struct Example;
 
 impl Module for Example {
