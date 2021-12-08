@@ -12,7 +12,7 @@ checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
 name = "example"
 version = "0.1.0"
 dependencies = [
- "pn_rust",
+ "pn-rust",
 ]
 
 [[package]]
@@ -35,7 +35,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8521a1b57e76b1ec69af7599e75e38e7b7fad6610f037db8c79b127201b5d119"
 
 [[package]]
-name = "pn_rust"
+name = "pn-rust"
 version = "0.1.0"
 dependencies = [
  "lazy_static",
@@ -43,11 +43,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "pn_rust_dll"
+name = "pn-rust-dll"
 version = "0.1.0"
 dependencies = [
  "example",
  "lazy_static",
  "libc",
- "pn_rust",
+ "pn-rust",
 ]

@@ -6,7 +6,7 @@ fn generate_cargo_toml<T: Write>(mut w: T, modules: &Vec<String>) -> io::Result<
     w.write_all(
         r#"
 [package]
-name = "pn_rust_dll"
+name = "pn-rust-dll"
 version = "0.1.0"
 edition = "2021"
 
@@ -17,8 +17,8 @@ crate-type = ["cdylib"]
 libc = "0.2"
 lazy_static = "1.4"
 
-[dependencies.pn_rust]
-path = "../pn_rust"
+[dependencies.pn-rust]
+path = "../pn-rust"
 
 "#
         .as_bytes(),
@@ -113,8 +113,8 @@ if let Some(result) = {}.lock().unwrap().exports(context, &function_name, argume
 }
 
 fn main() -> io::Result<()> {
-    let cargo_toml_destination = "rust/pn_rust_dll/Cargo.toml";
-    let glue_rs_destination = "rust/pn_rust_dll/src/glue.rs";
+    let cargo_toml_destination = "rust/pn-rust-dll/Cargo.toml";
+    let glue_rs_destination = "rust/pn-rust-dll/src/glue.rs";
 
     let modules: Vec<String> = fs::read_dir("rust/modules")?
         .map(|x| x.unwrap().file_name().into_string().unwrap())

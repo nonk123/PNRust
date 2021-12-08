@@ -1,5 +1,5 @@
 [package]
-name = "pn_rust"
+name = "pn-rust"
 version = "0.1.0"
 edition = "2021"
 

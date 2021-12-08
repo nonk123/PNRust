@@ -1,7 +1,7 @@
 [workspace]
 members = [
-    "rust/pn_rust",
-    "rust/pn_rust_dll",
+    "rust/pn-rust",
+    "rust/pn-rust-dll",
     "rust/generate-dll",
     "rust/modules/example",
 ]
